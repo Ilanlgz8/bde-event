@@ -38,6 +38,9 @@ class Evenements
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $location = null;
 
+    #[ORM\ManyToOne(inversedBy: 'evenements')]
+    private ?MembreBDE $membrebde = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -135,6 +138,18 @@ class Evenements
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getMembrebde(): ?MembreBDE
+    {
+        return $this->membrebde;
+    }
+
+    public function setMembrebde(?MembreBDE $membrebde): static
+    {
+        $this->membrebde = $membrebde;
 
         return $this;
     }
