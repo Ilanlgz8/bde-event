@@ -15,7 +15,7 @@ class MembreBDE extends User
     /**
      * @var Collection<int, Evenements>
      */
-    #[ORM\OneToMany(targetEntity: Evenements::class, mappedBy: 'membrebde')]
+    #[ORM\OneToMany(targetEntity: Evenements::class, mappedBy: 'creePar')]
     private Collection $evenements;
 
     public function __construct()
@@ -46,7 +46,7 @@ class MembreBDE extends User
     {
         if (!$this->evenements->contains($evenement)) {
             $this->evenements->add($evenement);
-            $evenement->setMembrebde($this);
+            $evenement->setCreePar($this);
         }
 
         return $this;
@@ -56,8 +56,8 @@ class MembreBDE extends User
     {
         if ($this->evenements->removeElement($evenement)) {
             // set the owning side to null (unless already changed)
-            if ($evenement->getMembrebde() === $this) {
-                $evenement->setMembrebde(null);
+            if ($evenement->getCreePar() === $this) {
+                $evenement->setCreePar(null);
             }
         }
 

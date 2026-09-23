@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EvenementsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -39,7 +41,25 @@ class Evenements
     private ?string $location = null;
 
     #[ORM\ManyToOne(inversedBy: 'evenements')]
-    private ?MembreBDE $membrebde = null;
+    private ?MembreBDE $creePar = null;
+
+    #[ORM\ManyToOne(inversedBy: 'evenements')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Salle $salle = null;
+
+    /**
+     * @var Collection<int, Inscription>
+     */
+    #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement', orphanRemoval: true)]
+    private Collection $inscriptions;
+
+    #[ORM\Column]
+    private ?int $limiteParticipants = null;
+
+    public function __construct()
+    {
+        $this->inscriptions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -142,14 +162,68 @@ class Evenements
         return $this;
     }
 
-    public function getMembrebde(): ?MembreBDE
+    public function getCreePar(): ?MembreBDE
     {
-        return $this->membrebde;
+        return $this->creePar;
     }
 
-    public function setMembrebde(?MembreBDE $membrebde): static
+    public function setCreePar(?MembreBDE $creePar): static
     {
-        $this->membrebde = $membrebde;
+        $this->creePar = $creePar;
+
+        return $this;
+    }
+
+    public function getSalle(): ?Salle
+    {
+        return $this->salle;
+    }
+
+    public function setSalle(?Salle $salle): static
+    {
+        $this->salle = $salle;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Inscription>
+     */
+    public function getInscriptions(): Collection
+    {
+        return $this->inscriptions;
+    }
+
+    public function addInscription(Inscription $inscription): static
+    {
+        if (!$this->inscriptions->contains($inscription)) {
+            $this->inscriptions->add($inscription);
+            $inscription->setEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInscription(Inscription $inscription): static
+    {
+        if ($this->inscriptions->removeElement($inscription)) {
+            // set the owning side to null (unless already changed)
+            if ($inscription->getEvenement() === $this) {
+                $inscription->setEvenement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLimiteParticipants(): ?int
+    {
+        return $this->limiteParticipants;
+    }
+
+    public function setLimiteParticipants(int $limiteParticipants): static
+    {
+        $this->limiteParticipants = $limiteParticipants;
 
         return $this;
     }
